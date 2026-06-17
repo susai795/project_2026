@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session, select
 
-from app.models.user import User
 from app.models.registration import Registration
+from app.models.user import User
 from app.data.db import get_session
 
-user_router = APIRouter(prefix="/users")
+user_router = APIRouter(prefix="/users",)
 
+
+# GET /users
 @user_router.get("", response_model=list[User])
 def get_user(session: Session = Depends(get_session)):
     # Questa query diventerà solo: SELECT user.username FROM user (Funzionerà al 100%)
@@ -15,6 +17,7 @@ def get_user(session: Session = Depends(get_session)):
     return db_users
 
 
+# POST /users
 @user_router.post("", status_code=status.HTTP_201_CREATED)
 def create_user(user: User, session: Session = Depends(get_session)):
 

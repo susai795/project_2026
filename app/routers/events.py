@@ -9,6 +9,7 @@ from app.models.registration import Registration
 from app.data.db import get_session #import database
 
 events_router = APIRouter(prefix="/events")
+
 #restituzione lista con tutti gli elementi programmati
 @events_router.get("", status_code=status.HTTP_200_OK)
 def get_events(session: Session = Depends(get_session)):
@@ -17,12 +18,6 @@ def get_events(session: Session = Depends(get_session)):
 #creazione nuovo evento
 @events_router.post("", status_code=status.HTTP_201_CREATED)
 def create_event(event:CreateEvent, session: Session = Depends(get_session)):
-    db_event = Event.model_validate(event)
-
-    session.add(db_event)
-    session.commit()
-    session.refresh(db_event)
-    return db_event
     """creazione della tabella:
     [
       {
@@ -33,14 +28,22 @@ def create_event(event:CreateEvent, session: Session = Depends(get_session)):
         "id": 0
       }
     ]"""
-#restituzione evento con ID
+    db_event = Event.model_validate(event)
+
+    session.add(db_event)
+    session.commit()
+    session.refresh(db_event)
+    return db_event
+
+
+# restituzione evento con ID
 @events_router.get("/{id}", status_code=status.HTTP_200_OK)
 def get_event(id: int, session: Session = Depends(get_session)):
-    #event = session.query(Event).get(id)
+    # event = session.query(Event).get(id)
     event = session.get(Event, id)
     if event:
         return event
-    else :
+    else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
@@ -77,35 +80,37 @@ def update_event(id: int, event_update: Event, session: Session = Depends(get_se
     if not db_event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
-    db_event.title=event_update.title
+    db_event.title = event_update.title
 
-    if isinstance(event_update.date,str):
-        db_event.date=datetime.fromisoformat(event_update.date)
+    if isinstance(event_update.date, str):
+        db_event.date = datetime.fromisoformat(event_update.date)
     else:
-        db_event.date=event_update.date
+        db_event.date = event_update.date
 
-    #db_event = Event.model_validate(event_update)
+    # db_event = Event.model_validate(event_update)
 
-    db_event.description=event_update.description
-    db_event.location=event_update.location
+    db_event.description = event_update.description
+    db_event.location = event_update.location
 
     session.add(db_event)
     session.commit()
     session.refresh(db_event)
     return db_event
 
+
 @events_router.delete("", status_code=status.HTTP_200_OK)
 def delete_all_event(session: Session = Depends(get_session)):
-    registrations=session.exec(select(Registration)).all()
+    registrations = session.exec(select(Registration)).all()
     for reg in registrations:
         session.delete(reg)
 
-    events=session.exec(select(Event)).all()
+    events = session.exec(select(Event)).all()
     for event in events:
         session.delete(event)
         session.commit()
 
-    return {"Events deleted successfully"} #per messaggi, status_code 200_ok
+    return {"Events deleted successfully"}  # per messaggi, status_code 200_ok
+
 
 @events_router.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete_event(id: int, session: Session = Depends(get_session)):
@@ -113,7 +118,7 @@ def delete_event(id: int, session: Session = Depends(get_session)):
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
-    registrations=session.exec(select(Registration).where(Registration.event_id==id))
+    registrations = session.exec(select(Registration).where(Registration.event_id == id))
     for reg in registrations:
         session.delete(reg)
 
