@@ -40,7 +40,7 @@ def get_event(id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.post("/events/{id}/register", status_code=status.HTTP_200_OK)
+@router.post("/{id}/register", status_code=status.HTTP_200_OK)
 def register_to_event(id: int, user_data: CreateUser, session: Session = Depends(get_session)):
     """registrazione utente ad un evento con l'id indicato. se l'utente non esiste si procede alla creazione"""
     # 1. Verifica che l'evento esista
