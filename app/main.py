@@ -37,9 +37,9 @@ app.mount(
 )
 app.include_router(frontend.router)
 
-app.include_router(events.events_router) #implementazione file events
-app.include_router(users.user_router)
-app.include_router(registrations.registration_router)
+app.include_router(events.router) #implementazione file events
+app.include_router(users.router)
+app.include_router(registrations.router)
 
 
 if __name__ == "__main__":
