@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session, select
 
 from app.models.registration import Registration
-from app.models.user import User
+from app.models.user import User, CreateUser
 from app.data.db import get_session
 
 router = APIRouter(prefix="/users",)
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/users",)
 
 # GET /users
 @router.get("", response_model=list[User])
-def get_user(session: Session = Depends(get_session)):
+def get_users(session: Session = Depends(get_session)):
     """Questa query diventerà solo: SELECT user.username FROM user (Funzionerà al 100%)"""
     db_users = session.exec(select(User)).all()
 
@@ -19,7 +19,7 @@ def get_user(session: Session = Depends(get_session)):
 
 # POST /users
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_user(user: User, session: Session = Depends(get_session)):
+def create_user(user: CreateUser, session: Session = Depends(get_session)):
     """creazione  utente e verifica se il nome utente esiste già"""
     db_users = session.get(User, user.username)
     if db_users:

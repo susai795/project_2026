@@ -17,3 +17,5 @@ class Event(SQLModel, table=True):
     description: str
     date: datetime
     location: str
+
+    #model_config = ConfigDict(strict=True)
