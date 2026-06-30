@@ -31,7 +31,7 @@ def create_user(user: User, session: Session = Depends(get_session)):
 
     return user
 
-@router.get("/users/{username}", response_model=User)
+@router.get("/{username}", response_model=User)
 def get_user(username: str, session: Session = Depends(get_session)):
     """restituzione singolo utente di una lista dato il suo username"""
     user = session.get(User, username)
