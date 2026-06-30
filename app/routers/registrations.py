@@ -12,11 +12,13 @@ router=APIRouter(
 
 @router.get("", status_code=status.HTTP_200_OK)
 def get_registration(session: Session = Depends(get_session)):
+    """restituisce tutte le registrazioni effettuate"""
     registrations=session.exec(select(Registration)).all()
     return registrations
 
 @router.delete("", status_code=status.HTTP_200_OK)
 def delete_registration(username: str, event_id: int,session: Session = Depends(get_session)):
+    """eliminazione delle singole registrazioni tramite query parameter"""
     user=session.get(User, username)
     event=session.get(Event, event_id)
     registration=session.get(Registration,(username, event_id))
@@ -30,5 +32,5 @@ def delete_registration(username: str, event_id: int,session: Session = Depends(
 
     session.delete(registration)
     session.commit()
-    return {"Registration deleted"}
+    return {"message":"Registration deleted"}
 

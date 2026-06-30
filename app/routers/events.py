@@ -13,21 +13,13 @@ router = APIRouter(prefix="/events")
 #restituzione lista con tutti gli elementi programmati
 @router.get("", status_code=status.HTTP_200_OK)
 def get_events(session: Session = Depends(get_session)):
+    """restituzione lista eventi esistenti"""
     events=session.exec(select(Event)).all()
     return events
 #creazione nuovo evento
 @router.post("", status_code=status.HTTP_201_CREATED)
 def create_event(event:CreateEvent, session: Session = Depends(get_session)):
-    """creazione della tabella:
-    [
-      {
-        "title": "string",
-        "description": "string",
-        "date": "2026-05-22T16:46:29.137Z",
-        "location": "string",
-        "id": 0
-      }
-    ]"""
+    """creazione singolo evento"""
     db_event = Event.model_validate(event)
 
     session.add(db_event)
@@ -39,6 +31,7 @@ def create_event(event:CreateEvent, session: Session = Depends(get_session)):
 # restituzione evento con ID
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 def get_event(id: int, session: Session = Depends(get_session)):
+    """restituzione evento con id indicato"""
     # event = session.query(Event).get(id)
     event = session.get(Event, id)
     if event:
@@ -49,6 +42,7 @@ def get_event(id: int, session: Session = Depends(get_session)):
 
 @router.post("/{id}/register", status_code=status.HTTP_200_OK)
 def register_to_event(id: int, user_data: User, session: Session = Depends(get_session)):
+    """registrazione utente ad un evento con l'id indicato. se l'utente non esiste si procede alla creazione"""
     # 1. Verifica che l'evento esista
     event = session.get(Event, id)
     if not event:
@@ -70,11 +64,12 @@ def register_to_event(id: int, user_data: User, session: Session = Depends(get_s
     # 4. Salva l'utente E la registrazione nel database in un colpo solo
     session.commit()
 
-    return {"User successfully registered to the event"}
+    return {"message":"User successfully registered to the event"}
 
 
 @router.put("/{id}", status_code=status.HTTP_200_OK)
 def update_event(id: int, event_update: Event, session: Session = Depends(get_session)):
+    """aggiornamento evento"""
     db_event = session.get(Event, id)
 
     if not db_event:
@@ -100,6 +95,7 @@ def update_event(id: int, event_update: Event, session: Session = Depends(get_se
 
 @router.delete("", status_code=status.HTTP_200_OK)
 def delete_all_event(session: Session = Depends(get_session)):
+    """eliminazione di tutti gli eventi"""
     registrations = session.exec(select(Registration)).all()
     for reg in registrations:
         session.delete(reg)
@@ -109,11 +105,12 @@ def delete_all_event(session: Session = Depends(get_session)):
         session.delete(event)
         session.commit()
 
-    return {"Events deleted successfully"}  # per messaggi, status_code 200_ok
+    return {"message":"Events deleted successfully"}  # per messaggi, status_code 200_ok
 
 
 @router.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete_event(id: int, session: Session = Depends(get_session)):
+    """eliminazione singolo evento con id indicato"""
     event = session.get(Event, id)
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
@@ -124,5 +121,5 @@ def delete_event(id: int, session: Session = Depends(get_session)):
 
     session.delete(event)
     session.commit()
-    return {"Event deleted successfully"}
+    return {"message":"Event deleted successfully"}
 
