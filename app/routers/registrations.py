@@ -6,16 +6,16 @@ from app.models.event import Event
 from app.models.registration import Registration
 from app.data.db import get_session #import database
 
-registration_router=APIRouter(
+router=APIRouter(
     prefix="/registrations",
 )
 
-@registration_router.get("", status_code=status.HTTP_200_OK)
+@router.get("", status_code=status.HTTP_200_OK)
 def get_registration(session: Session = Depends(get_session)):
     registrations=session.exec(select(Registration)).all()
     return registrations
 
-@registration_router.delete("", status_code=status.HTTP_200_OK)
+@router.delete("", status_code=status.HTTP_200_OK)
 def delete_registration(username: str, event_id: int,session: Session = Depends(get_session)):
     user=session.get(User, username)
     event=session.get(Event, event_id)
