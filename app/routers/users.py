@@ -53,7 +53,7 @@ def delete_all_users(session: Session = Depends(get_session)):
         session.delete(user)
         session.commit()
 
-    return {"message":"Users deleted successfully"} #per messaggi, status_code 200_ok
+    return {"message":"Users deleted successfully"} #status_code 200_ok
 
 
 @router.delete("/{username}", status_code=status.HTTP_200_OK)
@@ -69,4 +69,4 @@ def delete_user(username: str, session: Session = Depends(get_session)):
 
     session.delete(user)
     session.commit()
-    return {"message":"User deleted successfully"}
+    return {"message":"User deleted successfully"} #status_code 200_ok
