@@ -25,11 +25,13 @@ def create_user(user: CreateUser, session: Session = Depends(get_session)):
     if db_users:
         raise HTTPException(status_code=400, detail="Username already exists")
 
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+    db_users=User.model_validate(user)
 
-    return user
+    session.add(db_users)
+    session.commit()
+    session.refresh(db_users)
+
+    return db_users
 
 @router.get("/{username}", response_model=User)
 def get_user(username: str, session: Session = Depends(get_session)):

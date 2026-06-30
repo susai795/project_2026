@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from datetime import datetime
 
 from app.models import registration
-from app.models.user import User
+from app.models.user import User, CreateUser
 from app.models.event import Event, CreateEvent
 from app.models.registration import Registration
 from app.data.db import get_session #import database
@@ -40,8 +40,8 @@ def get_event(id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.post("/{id}/register", status_code=status.HTTP_200_OK)
-def register_to_event(id: int, user_data: User, session: Session = Depends(get_session)):
+@router.post("/events/{id}/register", status_code=status.HTTP_200_OK)
+def register_to_event(id: int, user_data: CreateUser, session: Session = Depends(get_session)):
     """registrazione utente ad un evento con l'id indicato. se l'utente non esiste si procede alla creazione"""
     # 1. Verifica che l'evento esista
     event = session.get(Event, id)
